@@ -60,3 +60,19 @@ class Empleado:
         self.direccion = direccion
         self.correo = correo
         BaseDatos.empleados[self.id_empleado] = self
+
+class Venta:
+    def __init__(self, id_venta, fecha, nit_cliente, id_empleado):
+        self.id_venta = id_venta
+        self.fecha = fecha
+        self.nit_cliente = nit_cliente
+        self.id_empleado = id_empleado
+        self.detalles_ids = []
+        BaseDatos.ventas[self.id_venta] = self
+
+    def agregar_detalle(self, detalle_venta):
+        BaseDatos.detalles_venta[detalle_venta.id_detalle_venta] = detalle_venta
+        self.detalles_ids.append(detalle_venta.id_detalle_venta)
+
+    def calcular_total(self):
+        return sum(BaseDatos.detalles_venta[d].subtotal() for d in self.detalles_ids)
