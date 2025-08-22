@@ -45,9 +45,18 @@ class Categoria:
         BaseDatos.categorias[self.id_categoria] = self
 
 class Cliente:
-    def __init__(self, nit, nombre, direccion, correo):
+    def __init__(self, nit, nombre,telefono, direccion, correo):
         self.nit = nit
         self.nombre = nombre
+        self.telefono = telefono
         self.direccion = direccion
         self.correo = correo
         BaseDatos.clientes[self.nit] = self
+class Empleado:
+    def __init__(self, id_empleado, nombre, telefono, direccion, correo):
+        self.id_empleado = id_empleado
+        self.nombre = nombre
+        self.telefono = telefono
+        self.direccion = direccion
+        self.correo = correo
+        BaseDatos.empleados[self.id_empleado] = self
