@@ -37,3 +37,17 @@ class Producto:
         elif operacion == 'venta':
             self.stock -= cantidad
             self.total_ventas += cantidad
+
+class Categoria:
+    def __init__(self, id_categoria, nombre):
+        self.id_categoria = id_categoria
+        self.nombre = nombre
+        BaseDatos.categorias[self.id_categoria] = self
+
+class Cliente:
+    def __init__(self, nit, nombre, direccion, correo):
+        self.nit = nit
+        self.nombre = nombre
+        self.direccion = direccion
+        self.correo = correo
+        BaseDatos.clientes[self.nit] = self
