@@ -61,6 +61,18 @@ class Empleado:
         self.correo = correo
         BaseDatos.empleados[self.id_empleado] = self
 
+class Proveedor:
+    def __init__(self, id_proveedor, nombre, empresa, telefono, direccion, correo, id_categoria):
+        self.id_proveedor = id_proveedor
+        self.nombre = nombre
+        self.empresa = empresa
+        self.telefono = telefono
+        self.direccion = direccion
+        self.correo = correo
+        self.id_categoria = id_categoria
+        BaseDatos.proveedores[self.id_proveedor] = self
+
+
 class Venta:
     def __init__(self, id_venta, fecha, nit_cliente, id_empleado):
         self.id_venta = id_venta
