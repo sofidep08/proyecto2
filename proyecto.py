@@ -7,6 +7,7 @@ class Menus:
         print("[4] venta de productos")
         print("[5] Salir del menú")
 
+
 class BaseDatos:
     productos = {}
     categorias = {}
@@ -17,6 +18,12 @@ class BaseDatos:
     compras = {}
     detalles_venta = {}
     detalles_compra = {}
+
+class Categoria:
+    def __init__(self, id_categoria, nombre):
+        self.id_categoria = id_categoria
+        self.nombre = nombre
+        BaseDatos.categorias[self.id_categoria] = self
 
 class Producto:
     def __init__(self, id_producto, nombre, id_categoria, precio, stock):
@@ -37,12 +44,6 @@ class Producto:
         elif operacion == 'venta':
             self.stock -= cantidad
             self.total_ventas += cantidad
-
-class Categoria:
-    def __init__(self, id_categoria, nombre):
-        self.id_categoria = id_categoria
-        self.nombre = nombre
-        BaseDatos.categorias[self.id_categoria] = self
 
 class Cliente:
     def __init__(self, nit, nombre,telefono, direccion, correo):
@@ -88,3 +89,20 @@ class Venta:
 
     def calcular_total(self):
         return sum(BaseDatos.detalles_venta[d].subtotal() for d in self.detalles_ids)
+
+
+
+opcion=0
+menu=Menus()
+while(opcion!=5):
+    try:
+        menu.menu()
+        opcion=int(input("Elija una opción (Ingrese números enteros solamente)"))
+        if opcion in ["1", "2", "3", "4", "5"]:
+            match opcion:
+                case 1:
+                    pass
+        else:
+            print("Ingreso una opcion no valida o inexistente")
+    except ValueError:
+        print("Ingreso un dato incorrecto")
