@@ -1,12 +1,17 @@
 class Menus:
     def menu(self):
         print("\nBIENVENIDO AL MENÚ DE BEAUTIFUL ROSE")
+        print("[1] Administrar producto")
+        print("[2] venta de productos")
+        print("[3] Salir del menú")
+    def menu_administracion(self):
+        print("\nBIENVENIDO AL MENÚ ADMINISTRATIVO")
         print("[1] Registro de productos")
-        print("[2] Registro de empleados")
-        print("[3] Compra de productos")
-        print("[4] venta de productos")
-        print("[5] Salir del menú")
-
+        print("[2] Registro de categorias")
+        print("[3] compra de productos")
+        print("[4] Eliminar productos")
+        print("[6] Productos a la venta")
+        print("[7] Salir del menú")
 
 class BaseDatos:
     productos = {}
@@ -94,11 +99,11 @@ class Venta:
 
 opcion=0
 menu=Menus()
-while(opcion!=5):
+while(opcion!=3):
     try:
         menu.menu()
         opcion=int(input("Elija una opción (Ingrese números enteros solamente)"))
-        if opcion in ["1", "2", "3", "4", "5"]:
+        if opcion in ["1", "2", "3"]:
             match opcion:
                 case 1:
                     pass
@@ -106,3 +111,6 @@ while(opcion!=5):
             print("Ingreso una opcion no valida o inexistente")
     except ValueError:
         print("Ingreso un dato incorrecto")
+    if opcion!=3:
+        print("Presione ENTER para continuar")
+        input()
