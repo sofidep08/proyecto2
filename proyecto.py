@@ -94,7 +94,16 @@ class Venta:
 
     def calcular_total(self):
         return sum(BaseDatos.detalles_venta[d].subtotal() for d in self.detalles_ids)
+class DetalleVenta:
+    def __init__(self, id_detalle_venta, id_venta, id_producto, cantidad, precio):
+        self.id_detalle_venta = id_detalle_venta
+        self.id_venta = id_venta
+        self.id_producto = id_producto
+        self.cantidad = cantidad
+        self.precio = precio
 
+    def subtotal(self):
+        return self.cantidad * self.precio
 
 
 opcion=0
