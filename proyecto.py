@@ -2,14 +2,15 @@ class Menus:
     def menu(self):
         print("\nBIENVENIDO AL MENÚ DE BEAUTIFUL ROSE")
         print("[1] Administrar producto")
-        print("[2] venta de productos")
+        print("[2] Venta de productos")
         print("[3] Salir del menú")
     def menu_administracion(self):
         print("\nBIENVENIDO AL MENÚ ADMINISTRATIVO")
-        print("[1] Registro de productos")
-        print("[2] Registro de categorias")
-        print("[3] compra de productos")
-        print("[4] Eliminar productos")
+        print("[1] Registro de empleados")
+        print("[2] Registro de productos")
+        print("[3] Registro de categorias")
+        print("[4] Compra de productos")
+        print("[5] Eliminar productos")
         print("[6] Productos a la venta")
         print("[7] Salir del menú")
 
@@ -142,7 +143,9 @@ while(opcion!=3):
         if opcion in ["1", "2", "3"]:
             match opcion:
                 case 1:
-                    pass
+                    print("\nBIENVENIDO AL MENÚ DE ADMINISTRACIÓN")
+                    contrasena=input("Ingrese ")
+
         else:
             print("Ingreso una opcion no valida o inexistente")
     except ValueError:
