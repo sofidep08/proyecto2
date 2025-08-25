@@ -77,7 +77,21 @@ class Proveedor:
         self.correo = correo
         self.id_categoria = id_categoria
         BaseDatos.proveedores[self.id_proveedor] = self
+class Compra:
+    def __init__(self, id_compra, fecha, id_proveedor, id_empleado):
+        self.id_compra = id_compra
+        self.fecha = fecha
+        self.id_proveedor = id_proveedor
+        self.id_empleado = id_empleado
+        self.detalles_ids = []
+        BaseDatos.compras[self.id_compra] = self
 
+    def agregar_detalle(self, detalle_compra):
+        BaseDatos.detalles_compra[detalle_compra.id_detalle_compra] = detalle_compra
+        self.detalles_ids.append(detalle_compra.id_detalle_compra)
+
+    def calcular_total(self):
+        return sum(BaseDatos.detalles_compra[d].subtotal() for d in self.detalles_ids)
 
 class Venta:
     def __init__(self, id_venta, fecha, nit_cliente, id_empleado):
