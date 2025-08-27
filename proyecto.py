@@ -53,9 +53,7 @@ class Producto:
 
 class Cliente:
     def __init__(self):
-        self.clientes= {}
         self.cargar_cliente()
-
     def cargar_cliente(self):
         try:
             with open('clientes.txt', 'r', encoding="utf-8") as archivo:
@@ -63,7 +61,7 @@ class Cliente:
                     linea = archivo.strip()
                     if linea:
                         nit, nombre, direccion, telefono, correo = linea.split(":")
-                        self.clientes[nit] = {
+                        BaseDatos.clientes[nit] = {
                             "Nombre": nombre,
                             "Direccion": direccion,
                             "Telefono": telefono,
@@ -83,6 +81,27 @@ class AgregarCliente:
         BaseDatos.clientes[self.nit] = self
 
 class Empleado:
+    def __init__(self):
+        self.cargar_empleado()
+    def cargar_empleado(self):
+        try:
+            with open('empleados.txt', 'r', encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea = archivo.strip()
+                    if linea:
+                        id_empleado, nombre, telefono, direccion, correo = linea.split(":")
+                        BaseDatos.empleados[id_empleado] = {
+                            "Nombre": nombre,
+                            "Telefono": telefono,
+                            "Direccion": direccion,
+                            "Correo": correo
+                        }
+            print("Clientes importados desde empleados.txt")
+        except FileNotFoundError:
+            print("El archivo clientes aun no existe, se creara automaticamente después de guardar")
+
+
+class AgregarEmpleado:
     def __init__(self, id_empleado, nombre, telefono, direccion, correo):
         self.id_empleado = id_empleado
         self.nombre = nombre
