@@ -84,11 +84,11 @@ class AgregarCliente:
             "Telefono": telefono,
             "Correo": correo
         }
-
+        self.guardar_cliente()
         print(f"Cliente con {nit} se guardo correctamente")
 
     def guardar_cliente (self):
-        with open('empleados.txt', 'w', encoding="utf-8") as archivo:
+        with open('clientes.txt', 'w', encoding="utf-8") as archivo:
             for nit, cliente in BaseDatos.empleados.items():
                 archivo.write(f"{nit}:{cliente['Nombre']}:{cliente['Direccion']}:{cliente['Telefono']}:{cliente['Correo']}\n")
 
@@ -110,7 +110,7 @@ class Empleado:
                         }
             print("Empleados importados desde empleados.txt")
         except FileNotFoundError:
-            print("El archivo clientes aun no existe, se creara automaticamente después de guardar")
+            print("El archivo empleados aun no existe, se creara automaticamente después de guardar")
 
 
 class AgregarEmpleado:
@@ -135,6 +135,28 @@ class AgregarEmpleado:
                 archivo.write(f"{id_empleado}:{empleado['Nombre']}:{empleado['Direccion']}:{empleado['Telefono']}:{empleado['Correo']}\n")
 
 class Proveedor:
+    def __init__(self):
+        self.cargar_proveedor()
+    def cargar_proveedor(self):
+        try:
+            with open('proveedor.txt', 'r', encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea = archivo.strip()
+                    if linea:
+                        id_proveedor, nombre, empresa, telefono, direccion, correo = linea.split(":")
+                        BaseDatos.empleados[id_proveedor] = {
+                            "Nombre": nombre,
+                            "Empresa": empresa,
+                            "Telefono": telefono,
+                            "Direccion": direccion,
+                            "Correo": correo
+                        }
+            print("Proveedores importados desde proveedores.txt")
+        except FileNotFoundError:
+            print("El archivo proveedores aun no existe, se creara automaticamente después de guardar")
+
+
+class AgregarProveedor:
     def __init__(self, id_proveedor, nombre, empresa, telefono, direccion, correo, id_categoria):
         self.id_proveedor = id_proveedor
         self.nombre = nombre
@@ -143,7 +165,21 @@ class Proveedor:
         self.direccion = direccion
         self.correo = correo
         self.id_categoria = id_categoria
-        BaseDatos.proveedores[self.id_proveedor] = self
+        BaseDatos.proveedores[self.id_proveedor] = {
+            "Nombre": nombre,
+            "Empresa": empresa,
+            "Telefono": telefono,
+            "Direccion": direccion,
+            "Correo": correo
+        }
+        self.guardar_proveedor()
+        print(f"Proveedor con {id_proveedor} se guardo correctamente")
+
+    def guardar_proveedor (self):
+        with open('proveedor.txt', 'w', encoding="utf-8") as archivo:
+            for id_proveedor, proveedor in BaseDatos.empleados.items():
+                archivo.write(f"{id_proveedor}:{proveedor['Nombre']}:{proveedor['Empresa']}:{proveedor['Direccion']}:{proveedor['Telefono']}:{proveedor['Correo']}\n")
+
 class Compra:
     def __init__(self, id_compra, fecha, id_proveedor, id_empleado):
         self.id_compra = id_compra
