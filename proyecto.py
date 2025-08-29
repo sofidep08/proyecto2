@@ -78,7 +78,19 @@ class AgregarCliente:
         self.direccion = direccion
         self.telefono = telefono
         self.correo = correo
-        BaseDatos.clientes[self.nit] = self
+        BaseDatos.clientes[self.nit] = {
+            "Nombre": nombre,
+            "Direccion": direccion,
+            "Telefono": telefono,
+            "Correo": correo
+        }
+
+        print(f"Cliente con {nit} se guardo correctamente")
+
+    def guardar_cliente (self):
+        with open('empleados.txt', 'w', encoding="utf-8") as archivo:
+            for nit, cliente in BaseDatos.empleados.items():
+                archivo.write(f"{nit}:{cliente['Nombre']}:{cliente['Direccion']}:{cliente['Telefono']}:{cliente['Correo']}\n")
 
 class Empleado:
     def __init__(self):
@@ -96,7 +108,7 @@ class Empleado:
                             "Direccion": direccion,
                             "Correo": correo
                         }
-            print("Clientes importados desde empleados.txt")
+            print("Empleados importados desde empleados.txt")
         except FileNotFoundError:
             print("El archivo clientes aun no existe, se creara automaticamente después de guardar")
 
