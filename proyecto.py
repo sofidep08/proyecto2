@@ -230,19 +230,21 @@ class Proveedor:
 
 
 class AgregarProveedor:
-    def __init__(self, id_proveedor, nombre, empresa, telefono, direccion, correo,):
+    def __init__(self, id_proveedor, nombre, empresa, telefono, direccion, correo,id_categoria):
         self.id_proveedor = id_proveedor
         self.nombre = nombre
         self.empresa = empresa
         self.telefono = telefono
         self.direccion = direccion
         self.correo = correo
+        self.id_categoria = id_categoria
         BaseDatos.proveedores[self.id_proveedor] = {
             "Nombre": nombre,
             "Empresa": empresa,
             "Telefono": telefono,
             "Direccion": direccion,
-            "Correo": correo
+            "Correo": correo,
+            "id_categoria": id_categoria
         }
         self.guardar_proveedor()
         print(f"Proveedor con ID {id_proveedor} se guardo correctamente")
@@ -335,16 +337,22 @@ while(opcion!=5):
                         nuevo_empleado= AgregarEmpleado(id_empleado, nombre, telefono, direccion, correo)
                 case 2:
                     print("\nBIENVENIDO NUEVO PROVEEDOR")
-                    id_proveedor=input("ID de Proveedor: ")
-                    if id_proveedor in BaseDatos.proveedores:
-                        print(f"El proveedor con ID {id_proveedor} ya existe")
+                    print("CATEGORIAS DISPONIBLES")
+                    MostrarCategoria.mostrar_categoria()
+                    id_categoria = input("Ingrese la categoria que vende el proveedor: ")
+                    if id_categoria not in BaseDatos.categorias:
+                        print("Categoría no válida")
                     else:
-                        nombre=input("Nombre: ")
-                        empresa=input("Empresa: ")
-                        telefono=int(input("Telefono: "))
-                        direccion=input("Direccion: ")
-                        correo=input("Correo: ")
-                        nuevo_proveedor= AgregarProveedor(id_proveedor, nombre, empresa, telefono, direccion, correo)
+                        id_proveedor=input("ID de Proveedor: ")
+                        if id_proveedor in BaseDatos.proveedores:
+                            print(f"El proveedor con ID {id_proveedor} ya existe")
+                        else:
+                            nombre=input("Nombre: ")
+                            empresa=input("Empresa: ")
+                            telefono=int(input("Telefono: "))
+                            direccion=input("Direccion: ")
+                            correo=input("Correo: ")
+                            nuevo_proveedor= AgregarProveedor(id_proveedor, nombre, empresa, telefono, direccion, correo, id_categoria)
                 case 3:
                     intentos=3
                     while intentos!=0:
@@ -393,12 +401,31 @@ while(opcion!=5):
                                                     id_proveedor = input("Ingrese el ID del proveedor: ")
                                                     if id_proveedor not in BaseDatos.proveedores:
                                                         print("Proveedor no existe")
+                                                    else:
+                                                        producto = BaseDatos.productos[id_producto]
+                                                        proveedor = BaseDatos.proveedores[id_proveedor]
+                                                        if producto["id_categoria"] != proveedor["id_categoria"]:
+                                                            print("El proveedor no vende esta categoría de producto")
+                                                        else:
+                                                            cantidad = int(input("Ingrese la cantidad a comprar: "))
+                                                            precio = float(input("Ingrese el precio de compra por unidad: "))
+                                                            fecha = input("Ingrese la fecha de la compra (DD/MM/AAAA): ")
+
+                                                            id_compra = len(BaseDatos.compras) + 1
+                                                            nueva_compra = Compra(id_compra, fecha, id_proveedor,id_empleado)
+
+                                                            id_detalle_compra = len(BaseDatos.detalles_compra) + 1
+                                                            detalle = DetalleCompra(id_detalle_compra, id_compra, id_producto,cantidad, precio, fecha)
+                                                            nueva_compra.agregar_detalle(detalle)
+
+                                                            BaseDatos.productos[id_producto]["stock"] += cantidad
+                                                            BaseDatos.productos[id_producto]["total_compras"] += cantidad
+                                                            print(f"Compra registrada correctamente. Producto {id_producto} abastecido con {cantidad} unidades.")
                                         case 4:
                                             pass
                                         case 5:
                                             print("Volviendo al menú principal...")
                                             break
-
                                 else:
                                     print("Ingreso una opcion no valida o inexistente")
                             break
