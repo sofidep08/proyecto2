@@ -108,7 +108,19 @@ class AgregarEmpleado:
         self.telefono = telefono
         self.direccion = direccion
         self.correo = correo
-        BaseDatos.empleados[self.id_empleado] = self
+        BaseDatos.empleados[self.id_empleado] ={
+            "Nombre": nombre,
+            "Telefono": telefono,
+            "Direccion": direccion,
+            "Correo": correo
+        }
+        self.guardar_empleado()
+        print(f"Empleado con {id_empleado} se guardo correctamente")
+
+    def guardar_empleado (self):
+        with open('empleados.txt', 'w', encoding="utf-8") as archivo:
+            for id_empleado, empleado in BaseDatos.empleados.items():
+                archivo.write(f"{id_empleado}:{empleado['Nombre']}:{empleado['Direccion']}:{empleado['Telefono']}:{empleado['Correo']}\n")
 
 class Proveedor:
     def __init__(self, id_proveedor, nombre, empresa, telefono, direccion, correo, id_categoria):
