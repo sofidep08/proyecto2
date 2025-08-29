@@ -123,6 +123,17 @@ class MostrarProducto:
         print("\nLISTADO DE PRODUCTOS")
         for id_producto, productos in BaseDatos.productos.items():
             print(f"ID: {id_producto}: Nombre: {productos['Nombre']} :{productos['id_categoria']} :{['precio']}:{productos['stock']}:{productos['total_compras']}:{productos['total_ventas']}\n")
+class Ordenamiento:
+    @staticmethod
+    def quicksort_productos(lista_productos):
+        if len(lista_productos) <= 1:
+            return lista_productos
+        else:
+            pivote = lista_productos[0]
+            menor = [x for x in lista_productos[1:] if x[1]["id_categoria"] <= pivote[1]["id_categoria"]]
+            mayor = [x for x in lista_productos[1:] if x[1]["id_categoria"] > pivote[1]["id_categoria"]]
+            return Ordenamiento.quicksort_productos(menor) + [pivote] + Ordenamiento.quicksort_productos(mayor)
+
 
 class Cliente:
     def __init__(self):
@@ -422,7 +433,17 @@ while(opcion!=5):
                                                             BaseDatos.productos[id_producto]["total_compras"] += cantidad
                                                             print(f"Compra registrada correctamente. Producto {id_producto} abastecido con {cantidad} unidades.")
                                         case 4:
-                                            pass
+                                            if not BaseDatos.productos:
+                                                print("No hay productos registrados.")
+                                                lista_productos = list(BaseDatos.productos.items())
+                                                productos_ordenados = Ordenamiento.quicksort_productos(lista_productos)
+
+                                                print("\nPRODUCTOS A LA VENTA (ordenados por categoria):")
+                                                for id_producto, producto in productos_ordenados:
+                                                    print(f"ID: {id_producto} : Nombre: {producto['Nombre']} ")
+                                                    print(f"Categoría: {producto['id_categoria']} : Precio: {producto['precio']}")
+                                                    print(f"Stock: {producto['stock']} : Total Compras: {producto['total_compras']}")
+                                                    print(f"Total Ventas: {producto['total_ventas']}")
                                         case 5:
                                             print("Volviendo al menú principal...")
                                             break
