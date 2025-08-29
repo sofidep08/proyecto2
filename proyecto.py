@@ -30,21 +30,21 @@ class Categoria:
         self.cargar_categoria()
     def cargar_categoria(self):
         try:
-            with open('categorias.txt', 'r', encoding="utf-8") as archivo:
+            with open('categoria.txt', 'r', encoding="utf-8") as archivo:
                 for linea in archivo:
-                    linea = archivo.strip()
+                    linea = linea.strip()
                     if linea:
                         id_categoria, nombre = linea.split(":")
                         BaseDatos.categorias[id_categoria] = {
                             "Nombre": nombre
                         }
-            print("Clientes importados desde clientes.txt")
+            print("Categoria importados desde categoria.txt")
         except FileNotFoundError:
             print("El archivo categoria aun no existe, se creara automaticamente después de guardar")
 
 class AgregarCategoria:
-    def __init__(self, id_categoria, nombre):
-        self.id_categoria = id_categoria
+    def __init__(self, nombre):
+        self.id_categoria = str(len(BaseDatos.categorias) + 1)
         self.nombre = nombre
         BaseDatos.categorias[self.id_categoria] = {
             "Nombre": nombre
@@ -73,22 +73,26 @@ class Producto:
         try:
             with open('producto.txt', 'r', encoding="utf-8") as archivo:
                 for linea in archivo:
-                    linea = archivo.strip()
+                    linea = linea.strip()
                     if linea:
-                        id_producto, nombre = linea.split(":")
-                        BaseDatos.categorias[id_categoria] = {
-                            "Nombre": nombre
+                        id_producto, nombre, id_categoria, precio, stock, total_compras, total_ventas = linea.split(":")
+                        BaseDatos.productos[id_producto] = {
+                            "Nombre": nombre,
+                            "id_categoria": id_categoria,
+                            "Precio": float(precio),
+                            "Stock": int(stock),
+                            "total_compras": int(total_compras),
+                            "total_ventas": int(total_ventas)
+
                         }
-            print("Clientes importados desde producto.txt")
+            print("Productos importados desde producto.txt")
         except FileNotFoundError:
             print("El archivo producto aun no existe, se creara automaticamente después de guardar")
 
 
 class AgregarProducto:
-    def __init__(self, id_producto, nombre, precio, stock):
-        global producto_id
-        self.id_producto = f"{id_categoria}-{producto_id}"
-        id_producto +=1
+    def __init__(self, id_categoria, nombre, precio, stock):
+        self.id_producto = f"{id_categoria}-{len(BaseDatos.productos) + 1000}"
         self.nombre = nombre
         self.precio = precio
         self.stock = stock
@@ -97,24 +101,21 @@ class AgregarProducto:
 
         BaseDatos.productos[self.id_producto] = {
             "Nombre": nombre,
-            "precio": precio,
-            "stock": stock,
+            "id_categoria": id_categoria,
+            "Precio": precio,
+            "Stock": stock,
             "total_compras": self.total_compras,
             "total_ventas": self.total_ventas
         }
+        self.guardar_producto()
+        print("Se guardo el producto")
 
-    def guardar_produto(self):
+    def guardar_producto(self):
         with open('producto.txt', 'w', encoding="utf-8") as archivo:
             for id_producto, productos in BaseDatos.productos.items():
-                archivo.write(f"{id_producto}:{productos['Nombre']} :{productos['id_categoria']} :{productos['precio']}:{productos['stock']}:{productos['total_compras']}:{productos['total_ventas']}\n")
+                archivo.write(f"{id_producto}:{productos['Nombre']}:{productos['id_categoria']}:"
+                    f"{productos['Precio']}:{productos['Stock']}:{productos['total_compras']}:{productos['total_ventas']}\n")
 
-    def actualizar_stock(self, cantidad, operacion):
-        if operacion == 'compra':
-            self.stock += cantidad
-            self.total_compras += cantidad
-        elif operacion == 'venta':
-            self.stock -= cantidad
-            self.total_ventas += cantidad
 
 class MostrarProducto:
     @staticmethod
@@ -122,7 +123,8 @@ class MostrarProducto:
 
         print("\nLISTADO DE PRODUCTOS")
         for id_producto, productos in BaseDatos.productos.items():
-            print(f"ID: {id_producto}: Nombre: {productos['Nombre']} :{productos['id_categoria']} :{['precio']}:{productos['stock']}:{productos['total_compras']}:{productos['total_ventas']}\n")
+            print(f"ID: {id_producto}: Nombre: {productos['Nombre']} :{productos['id_categoria']} :{productos['precio']}:{productos['stock']}:{productos['total_compras']}:{productos['total_ventas']}\n")
+
 class Ordenamiento:
     @staticmethod
     def quicksort_productos(lista_productos):
@@ -130,8 +132,8 @@ class Ordenamiento:
             return lista_productos
         else:
             pivote = lista_productos[0]
-            menor = [x for x in lista_productos[1:] if x[1]["id_categoria"] <= pivote[1]["id_categoria"]]
-            mayor = [x for x in lista_productos[1:] if x[1]["id_categoria"] > pivote[1]["id_categoria"]]
+            menor = [x for x in lista_productos[1:] if x[1].get("id_categoria", "") <= pivote[1].get("id_categoria", "")]
+            mayor = [x for x in lista_productos[1:] if x[1].get("id_categoria", "") > pivote[1].get("id_categoria", "")]
             return Ordenamiento.quicksort_productos(menor) + [pivote] + Ordenamiento.quicksort_productos(mayor)
 
 
@@ -142,7 +144,7 @@ class Cliente:
         try:
             with open('clientes.txt', 'r', encoding="utf-8") as archivo:
                 for linea in archivo:
-                    linea = archivo.strip()
+                    linea = linea.strip()
                     if linea:
                         nit, nombre, direccion, telefono, correo = linea.split(":")
                         BaseDatos.clientes[nit] = {
@@ -183,7 +185,7 @@ class Empleado:
         try:
             with open('empleados.txt', 'r', encoding="utf-8") as archivo:
                 for linea in archivo:
-                    linea = archivo.strip()
+                    linea = linea.strip()
                     if linea:
                         id_empleado, nombre, telefono, direccion, correo = linea.split(":")
                         BaseDatos.empleados[id_empleado] = {
@@ -216,7 +218,7 @@ class AgregarEmpleado:
     def guardar_empleado (self):
         with open('empleados.txt', 'w', encoding="utf-8") as archivo:
             for id_empleado, empleado in BaseDatos.empleados.items():
-                archivo.write(f"{id_empleado}:{empleado['Nombre']}:{empleado['Direccion']}:{empleado['Telefono']}:{empleado['Correo']}\n")
+                archivo.write(f"{id_empleado}:{empleado['Nombre']}:{empleado['Telefono']}:{empleado['Direccion']}:{empleado['Correo']}\n")
 
 class Proveedor:
     def __init__(self):
@@ -225,19 +227,20 @@ class Proveedor:
         try:
             with open('proveedor.txt', 'r', encoding="utf-8") as archivo:
                 for linea in archivo:
-                    linea = archivo.strip()
+                    linea = linea.strip()
                     if linea:
-                        id_proveedor, nombre, empresa, telefono, direccion, correo = linea.split(":")
-                        BaseDatos.empleados[id_proveedor] = {
+                        id_proveedor, nombre, empresa, telefono, direccion, correo,id_categoria = linea.split(":")
+                        BaseDatos.proveedores[id_proveedor] = {
                             "Nombre": nombre,
                             "Empresa": empresa,
                             "Telefono": telefono,
                             "Direccion": direccion,
-                            "Correo": correo
+                            "Correo": correo,
+                            "id_categoria": id_categoria
                         }
-            print("Proveedores importados desde proveedores.txt")
+            print("Proveedores importados desde proveedor.txt")
         except FileNotFoundError:
-            print("El archivo proveedores aun no existe, se creara automaticamente después de guardar")
+            print("El archivo proveedor aun no existe, se creara automaticamente después de guardar")
 
 
 class AgregarProveedor:
@@ -263,12 +266,13 @@ class AgregarProveedor:
     def guardar_proveedor (self):
         with open('proveedor.txt', 'w', encoding="utf-8") as archivo:
             for id_proveedor, proveedor in BaseDatos.proveedores.items():
-                archivo.write(f"{id_proveedor}:{proveedor['Nombre']}:{proveedor['Empresa']}:{proveedor['Direccion']}:{proveedor['Telefono']}:{proveedor['Correo']}\n")
+                archivo.write(f"{id_proveedor}:{proveedor['Nombre']}:{proveedor['Empresa']}:{proveedor['Telefono']}:{proveedor['Direccion']}:{proveedor['Correo']}:{proveedor['id_categoria']}\n")
+
 class MostrarProveedor:
     @staticmethod
     def mostrar_proveedor():
         print("\nLISTADO DE PROVEEDORES")
-        for id_proveedor, provedor in BaseDatos.productos.items():
+        for id_proveedor, provedor in BaseDatos.proveedores.items():
             print(f"ID: {id_proveedor}: Nombre: {provedor['Nombre']} :{provedor['Empresa']} :{provedor['Telefono']}:{provedor['Direccion']}:{provedor['Correo']}\n")
 
 class Compra:
@@ -325,8 +329,7 @@ class DetalleVenta:
 
     def subtotal(self):
         return self.cantidad * self.precio
-categoria_id=0
-producto_id=1000
+
 opcion=0
 menu=Menus()
 while(opcion!=5):
@@ -348,22 +351,25 @@ while(opcion!=5):
                         nuevo_empleado= AgregarEmpleado(id_empleado, nombre, telefono, direccion, correo)
                 case 2:
                     print("\nBIENVENIDO NUEVO PROVEEDOR")
-                    print("CATEGORIAS DISPONIBLES")
-                    MostrarCategoria.mostrar_categoria()
-                    id_categoria = input("Ingrese la categoria que vende el proveedor: ")
-                    if id_categoria not in BaseDatos.categorias:
-                        print("Categoría no válida")
+                    if not BaseDatos.categorias:
+                        print("No hay categorias registradas. ingrese primero una categoria")
                     else:
-                        id_proveedor=input("ID de Proveedor: ")
-                        if id_proveedor in BaseDatos.proveedores:
-                            print(f"El proveedor con ID {id_proveedor} ya existe")
+                        print("CATEGORIAS DISPONIBLES")
+                        MostrarCategoria.mostrar_categoria()
+                        id_categoria = input("Ingrese la categoria que vende el proveedor: ")
+                        if id_categoria not in BaseDatos.categorias:
+                            print("Categoría no válida")
                         else:
-                            nombre=input("Nombre: ")
-                            empresa=input("Empresa: ")
-                            telefono=int(input("Telefono: "))
-                            direccion=input("Direccion: ")
-                            correo=input("Correo: ")
-                            nuevo_proveedor= AgregarProveedor(id_proveedor, nombre, empresa, telefono, direccion, correo, id_categoria)
+                            id_proveedor=input("ID de Proveedor: ")
+                            if id_proveedor in BaseDatos.proveedores:
+                                print(f"El proveedor con ID {id_proveedor} ya existe")
+                            else:
+                                nombre=input("Nombre: ")
+                                empresa=input("Empresa: ")
+                                telefono=int(input("Telefono: "))
+                                direccion=input("Direccion: ")
+                                correo=input("Correo: ")
+                                nuevo_proveedor= AgregarProveedor(id_proveedor, nombre, empresa, telefono, direccion, correo, id_categoria)
                 case 3:
                     intentos=3
                     while intentos!=0:
@@ -378,11 +384,13 @@ while(opcion!=5):
                                         case 1:
                                             print("REGISTRO DE CATEGORIAS")
                                             nombre=input("Nombre de la categoria: ")
-                                            if nombre in BaseDatos.categorias:
-                                                print("La categoria ingresada ya existe")
+
+                                            if any(categoria["Nombre"].lower() == nombre.lower() for categoria in
+                                                   BaseDatos.categorias.values()):
+                                                print("La categoría ingresada ya existe")
+
                                             else:
-                                                id_categoria = categoria_id + 10
-                                                nueva_categoria= AgregarCategoria(id_categoria, nombre)
+                                                nueva_categoria = AgregarCategoria(nombre)
                                         case 2:
                                             if not BaseDatos.categorias:
                                                 print("No hay categorias registradas. ingrese primero una categoria")
@@ -435,6 +443,7 @@ while(opcion!=5):
                                         case 4:
                                             if not BaseDatos.productos:
                                                 print("No hay productos registrados.")
+                                            else:
                                                 lista_productos = list(BaseDatos.productos.items())
                                                 productos_ordenados = Ordenamiento.quicksort_productos(lista_productos)
 
