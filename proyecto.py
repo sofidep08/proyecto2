@@ -334,7 +334,6 @@ while(opcion!=4):
                         id_empleado=input("Para tener acceso ingrese el ID de Empleado: ")
                         if id_empleado in BaseDatos.empleados:
                             while True:
-                                print("\nBIENVENIDO AL MENÚ DE ADMINISTRACIÓN")
                                 menu.menu_administracion()
                                 opcion2 = int(input("Elija una opción (Ingrese números enteros solamente)"))
                                 if opcion2 in [1, 2, 3, 4, 5]:
@@ -363,10 +362,15 @@ while(opcion!=4):
                                                     print("Producto Guardado")
                                         case 3:
                                             pass
-
+                                        case 4:
+                                            pass
+                                        case 5:
+                                            print("Volviendo al menú principal...")
+                                            break
 
                                 else:
                                     print("Ingreso una opcion no valida o inexistente")
+                            break
                         else:
                             print("\nID mal ingresado o no existe un empleado con ese ID. No puede acceder")
                             print(f"{intentos-1} Intentos disponibles")
