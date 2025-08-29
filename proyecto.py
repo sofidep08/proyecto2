@@ -1,9 +1,10 @@
 class Menus:
     def menu(self):
         print("\nBIENVENIDO AL MENÚ DE BEAUTIFUL ROSE")
-        print("[1] Administrar producto")
-        print("[2] Venta de productos")
-        print("[3] Salir del menú")
+        print("[1] Registro de empleados")
+        print("[2] Administrar producto")
+        print("[3] Venta de productos")
+        print("[4] Salir del menú")
     def menu_administracion(self):
         print("\nBIENVENIDO AL MENÚ ADMINISTRATIVO")
         print("[1] Registro de empleados")
@@ -89,7 +90,7 @@ class AgregarCliente:
 
     def guardar_cliente (self):
         with open('clientes.txt', 'w', encoding="utf-8") as archivo:
-            for nit, cliente in BaseDatos.empleados.items():
+            for nit, cliente in BaseDatos.clientes.items():
                 archivo.write(f"{nit}:{cliente['Nombre']}:{cliente['Direccion']}:{cliente['Telefono']}:{cliente['Correo']}\n")
 
 class Empleado:
@@ -177,7 +178,7 @@ class AgregarProveedor:
 
     def guardar_proveedor (self):
         with open('proveedor.txt', 'w', encoding="utf-8") as archivo:
-            for id_proveedor, proveedor in BaseDatos.empleados.items():
+            for id_proveedor, proveedor in BaseDatos.proveedores.items():
                 archivo.write(f"{id_proveedor}:{proveedor['Nombre']}:{proveedor['Empresa']}:{proveedor['Direccion']}:{proveedor['Telefono']}:{proveedor['Correo']}\n")
 
 class Compra:
@@ -238,20 +239,39 @@ class DetalleVenta:
 
 opcion=0
 menu=Menus()
-while(opcion!=3):
+while(opcion!=4):
     try:
         menu.menu()
         opcion=int(input("Elija una opción (Ingrese números enteros solamente)"))
-        if opcion in ["1", "2", "3"]:
+        if opcion in [1,2,3,4]:
             match opcion:
                 case 1:
-                    print("\nBIENVENIDO AL MENÚ DE ADMINISTRACIÓN")
-                    contrasena=input("Ingrese ")
+                    print("\nBIENVENIDO NUEVO EMPLEADO")
+                    id_empleado=input("ID de Empleado: ")
+                    if id_empleado in BaseDatos.empleados:
+                        print(f"El empleado con ID {id_empleado} ya existe")
+                    else:
+                        nombre=input("Nombre: ")
+                        telefono=int(input("Telefono: "))
+                        direccion=input("Direccion: ")
+                        correo=input("Correo: ")
+                        nuevo_empleado= AgregarEmpleado(id_empleado, nombre, telefono, direccion, correo)
+                case 2:
+                    intentos=3
+                    print("\nADMINISTRACION")
+                    id_empleado=input("Para tener acceso ingrese el ID de Empleado: ")
+                    if id_empleado in BaseDatos.empleados:
+                        print("\nBIENVENIDO AL MENÚ DE ADMINISTRACIÓN")
+                    else:
+                        print("\nID mal ingresado o no existe un empleado con ese ID. No puede acceder")
+                        print(f"{intentos-1} disponibles")
+                        intentos=intentos-1
+                    if intentos==0:
 
         else:
             print("Ingreso una opcion no valida o inexistente")
     except ValueError:
         print("Ingreso un dato incorrecto")
-    if opcion!=3:
+    if opcion!=4:
         print("Presione ENTER para continuar")
         input()
