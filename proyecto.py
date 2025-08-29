@@ -2,9 +2,10 @@ class Menus:
     def menu(self):
         print("\nBIENVENIDO AL MENÚ DE BEAUTIFUL ROSE")
         print("[1] Registro de empleados")
-        print("[2] Administrar producto")
-        print("[3] Venta de productos")
-        print("[4] Salir del menú")
+        print("[2] Registro de proveedores")
+        print("[3] Administrar producto")
+        print("[4] Venta de productos")
+        print("[5] Salir del menú")
     def menu_administracion(self):
         print("\nBIENVENIDO AL MENÚ ADMINISTRATIVO")
         print("[1] Registro de categorias")
@@ -105,7 +106,7 @@ class AgregarProducto:
     def guardar_produto(self):
         with open('producto.txt', 'w', encoding="utf-8") as archivo:
             for id_producto, productos in BaseDatos.productos.items():
-                archivo.write(f"{id_producto}:{productos['Nombre']} :{productos['id_categoria']} :{['precio']}:{productos['stock']}:{productos['total_compras']}:{productos['total_ventas']}\n")
+                archivo.write(f"{id_producto}:{productos['Nombre']} :{productos['id_categoria']} :{productos['precio']}:{productos['stock']}:{productos['total_compras']}:{productos['total_ventas']}\n")
 
     def actualizar_stock(self, cantidad, operacion):
         if operacion == 'compra':
@@ -119,7 +120,7 @@ class MostrarProducto:
     @staticmethod
     def mostrar_producto():
 
-        print("\nLISTADO DE Productos")
+        print("\nLISTADO DE PRODUCTOS")
         for id_producto, productos in BaseDatos.productos.items():
             print(f"ID: {id_producto}: Nombre: {productos['Nombre']} :{productos['id_categoria']} :{['precio']}:{productos['stock']}:{productos['total_compras']}:{productos['total_ventas']}\n")
 
@@ -229,14 +230,13 @@ class Proveedor:
 
 
 class AgregarProveedor:
-    def __init__(self, id_proveedor, nombre, empresa, telefono, direccion, correo, id_categoria):
+    def __init__(self, id_proveedor, nombre, empresa, telefono, direccion, correo,):
         self.id_proveedor = id_proveedor
         self.nombre = nombre
         self.empresa = empresa
         self.telefono = telefono
         self.direccion = direccion
         self.correo = correo
-        self.id_categoria = id_categoria
         BaseDatos.proveedores[self.id_proveedor] = {
             "Nombre": nombre,
             "Empresa": empresa,
@@ -251,6 +251,12 @@ class AgregarProveedor:
         with open('proveedor.txt', 'w', encoding="utf-8") as archivo:
             for id_proveedor, proveedor in BaseDatos.proveedores.items():
                 archivo.write(f"{id_proveedor}:{proveedor['Nombre']}:{proveedor['Empresa']}:{proveedor['Direccion']}:{proveedor['Telefono']}:{proveedor['Correo']}\n")
+class MostrarProveedor:
+    @staticmethod
+    def mostrar_proveedor():
+        print("\nLISTADO DE PROVEEDORES")
+        for id_proveedor, provedor in BaseDatos.productos.items():
+            print(f"ID: {id_proveedor}: Nombre: {provedor['Nombre']} :{provedor['Empresa']} :{provedor['Telefono']}:{provedor['Direccion']}:{provedor['Correo']}\n")
 
 class Compra:
     def __init__(self, id_compra, fecha, id_proveedor, id_empleado):
@@ -310,11 +316,11 @@ categoria_id=0
 producto_id=1000
 opcion=0
 menu=Menus()
-while(opcion!=4):
+while(opcion!=5):
     try:
         menu.menu()
         opcion=int(input("Elija una opción (Ingrese números enteros solamente)"))
-        if opcion in [1,2,3,4]:
+        if opcion in [1,2,3,4,5]:
             match opcion:
                 case 1:
                     print("\nBIENVENIDO NUEVO EMPLEADO")
@@ -328,6 +334,18 @@ while(opcion!=4):
                         correo=input("Correo: ")
                         nuevo_empleado= AgregarEmpleado(id_empleado, nombre, telefono, direccion, correo)
                 case 2:
+                    print("\nBIENVENIDO NUEVO PROVEEDOR")
+                    id_proveedor=input("ID de Proveedor: ")
+                    if id_proveedor in BaseDatos.proveedores:
+                        print(f"El proveedor con ID {id_proveedor} ya existe")
+                    else:
+                        nombre=input("Nombre: ")
+                        empresa=input("Empresa: ")
+                        telefono=int(input("Telefono: "))
+                        direccion=input("Direccion: ")
+                        correo=input("Correo: ")
+                        nuevo_proveedor= AgregarProveedor(id_proveedor, nombre, empresa, telefono, direccion, correo)
+                case 3:
                     intentos=3
                     while intentos!=0:
                         print("\nADMINISTRACION")
@@ -348,7 +366,7 @@ while(opcion!=4):
                                                 nueva_categoria= AgregarCategoria(id_categoria, nombre)
                                         case 2:
                                             if not BaseDatos.categorias:
-                                                print("No hay categorias ingresadas. ingrese primero una categoria")
+                                                print("No hay categorias registradas. ingrese primero una categoria")
                                             else:
                                                 MostrarCategoria.mostrar_categoria()
                                                 produc_categoria=input("Ingrese el id de la categoria: ")
@@ -361,7 +379,20 @@ while(opcion!=4):
                                                     nuevo_producto = AgregarProducto(produc_categoria,nombre, precio, stock)
                                                     print("Producto Guardado")
                                         case 3:
-                                            pass
+                                            if not BaseDatos.productos:
+                                                print("No hay productos registrados. Primero registre un producto")
+                                            elif not BaseDatos.proveedores:
+                                                print("No hay proveedores registrados. Primero registre un proveedor")
+                                            else:
+                                                MostrarProducto.mostrar_producto()
+                                                id_producto = input("Ingrese el id del producto que desea comprar: ")
+                                                if id_producto not in BaseDatos.productos:
+                                                    print("Producto ingresado no existe")
+                                                else:
+                                                    MostrarProveedor.mostrar_proveedor()
+                                                    id_proveedor = input("Ingrese el ID del proveedor: ")
+                                                    if id_proveedor not in BaseDatos.proveedores:
+                                                        print("Proveedor no existe")
                                         case 4:
                                             pass
                                         case 5:
@@ -377,10 +408,14 @@ while(opcion!=4):
                             intentos=intentos-1
                         if intentos==0:
                             print("\nIntentos terminados, volviendo al menú principal...")
+                case 4:
+                    pass
+                case 5:
+                    print("Saliendo del menú")
         else:
             print("Ingreso una opcion no valida o inexistente")
     except ValueError:
         print("Ingreso un dato incorrecto")
-    if opcion!=4:
+    if opcion!=5:
         print("Presione ENTER para continuar")
         input()
