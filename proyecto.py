@@ -58,7 +58,7 @@ class AgregarCategoria:
 
 class MostrarCategoria:
     @staticmethod
-    def mostrar_empleados():
+    def mostrar_categoria():
 
         print("\nLISTADO DE CATEGORIAS")
         for id_categoria, categoria in BaseDatos.categorias.items():
@@ -84,10 +84,11 @@ class Producto:
 
 
 class AgregarProducto:
-    def __init__(self, id_producto, nombre, id_categoria, precio, stock):
-        self.id_producto = id_producto
+    def __init__(self, id_producto, nombre, precio, stock):
+        global producto_id
+        self.id_producto = f"{id_categoria}-{producto_id}"
+        id_producto +=1
         self.nombre = nombre
-        self.id_categoria = id_categoria
         self.precio = precio
         self.stock = stock
         self.total_compras = 0
@@ -95,7 +96,6 @@ class AgregarProducto:
 
         BaseDatos.productos[self.id_producto] = {
             "Nombre": nombre,
-            "id_categoria": id_categoria,
             "precio": precio,
             "stock": stock,
             "total_compras": self.total_compras,
@@ -343,8 +343,16 @@ while(opcion!=4):
                                             if not BaseDatos.categorias:
                                                 print("No hay categorias ingresadas. ingrese primero una categoria")
                                             else:
-                                                MostrarCategoria.mostrar_empleados()
+                                                MostrarCategoria.mostrar_categoria()
                                                 produc_categoria=input("Ingrese el id de la categoria: ")
+                                                if produc_categoria not in BaseDatos.categorias:
+                                                    print("La categoria ingresada no existe")
+                                                else:
+                                                    nombre = input("Nombre del producto: ")
+                                                    precio = float(input("Precio del producto: "))
+                                                    stock = int(input("Cantidad inicial en stock: "))
+                                                    nuevo_producto = AgregarProducto(produc_categoria,nombre, precio, stock)
+                                                    print("Producto Guardado")
 
 
 
