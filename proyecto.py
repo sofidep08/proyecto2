@@ -115,6 +115,14 @@ class AgregarProducto:
             self.stock -= cantidad
             self.total_ventas += cantidad
 
+class MostrarProducto:
+    @staticmethod
+    def mostrar_producto():
+
+        print("\nLISTADO DE Productos")
+        for id_producto, productos in BaseDatos.productos.items():
+            print(f"ID: {id_producto}: Nombre: {productos['Nombre']} :{productos['id_categoria']} :{['precio']}:{productos['stock']}:{productos['total_compras']}:{productos['total_ventas']}\n")
+
 class Cliente:
     def __init__(self):
         self.cargar_cliente()
@@ -353,7 +361,8 @@ while(opcion!=4):
                                                     stock = int(input("Cantidad inicial en stock: "))
                                                     nuevo_producto = AgregarProducto(produc_categoria,nombre, precio, stock)
                                                     print("Producto Guardado")
-
+                                        case 3:
+                                            pass
 
 
                                 else:
