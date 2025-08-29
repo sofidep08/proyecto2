@@ -56,6 +56,14 @@ class AgregarCategoria:
             for id_categoria, categoria in BaseDatos.categorias.items():
                 archivo.write(f"{id_categoria}:{categoria['Nombre']}\n")
 
+class MostrarCategoria:
+    @staticmethod
+    def mostrar_empleados():
+
+        print("\nLISTADO DE CATEGORIAS")
+        for id_categoria, categoria in BaseDatos.categorias.items():
+            print(f"ID: {id_categoria}: Nombre: {categoria['Nombre']}")
+
 
 class Producto:
     def __init__(self):
@@ -325,22 +333,29 @@ while(opcion!=4):
                                     match opcion2:
                                         case 1:
                                             print("REGISTRO DE CATEGORIAS")
-                                            id_categoria=categoria_id
                                             nombre=input("Nombre de la categoria: ")
+                                            if nombre in BaseDatos.categorias:
+                                                print("La categoria ingresada ya existe")
+                                            else:
+                                                id_categoria = categoria_id + 10
+                                                nueva_categoria= AgregarCategoria(id_categoria, nombre)
+                                        case 2:
+                                            if not BaseDatos.categorias:
+                                                print("No hay categorias ingresadas. ingrese primero una categoria")
+                                            else:
+                                                MostrarCategoria.mostrar_empleados()
+                                                produc_categoria=input("Ingrese el id de la categoria: ")
 
 
 
                                 else:
                                     print("Ingreso una opcion no valida o inexistente")
-
-
                         else:
                             print("\nID mal ingresado o no existe un empleado con ese ID. No puede acceder")
                             print(f"{intentos-1} Intentos disponibles")
                             intentos=intentos-1
                         if intentos==0:
                             print("\nIntentos terminados, volviendo al menú principal...")
-
         else:
             print("Ingreso una opcion no valida o inexistente")
     except ValueError:
