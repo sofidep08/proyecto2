@@ -7,13 +7,11 @@ class Menus:
         print("[4] Salir del menú")
     def menu_administracion(self):
         print("\nBIENVENIDO AL MENÚ ADMINISTRATIVO")
-        print("[1] Registro de empleados")
+        print("[1] Registro de categorias")
         print("[2] Registro de productos")
-        print("[3] Registro de categorias")
-        print("[4] Compra de productos")
-        print("[5] Eliminar productos")
-        print("[6] Productos a la venta")
-        print("[7] Salir del menú")
+        print("[3] Compra de productos")
+        print("[4] Productos a la venta")
+        print("[5] Salir del menú")
 
 class BaseDatos:
     productos = {}
@@ -27,12 +25,57 @@ class BaseDatos:
     detalles_compra = {}
 
 class Categoria:
+    def __init__(self):
+        self.cargar_categoria()
+    def cargar_categoria(self):
+        try:
+            with open('categorias.txt', 'r', encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea = archivo.strip()
+                    if linea:
+                        id_categoria, nombre = linea.split(":")
+                        BaseDatos.categorias[id_categoria] = {
+                            "Nombre": nombre
+                        }
+            print("Clientes importados desde clientes.txt")
+        except FileNotFoundError:
+            print("El archivo categoria aun no existe, se creara automaticamente después de guardar")
+
+class AgregarCategoria:
     def __init__(self, id_categoria, nombre):
         self.id_categoria = id_categoria
         self.nombre = nombre
-        BaseDatos.categorias[self.id_categoria] = self
+        BaseDatos.categorias[self.id_categoria] = {
+            "Nombre": nombre
+        }
+        self.guardar_categoria()
+        print("Se guardo la categoria")
+
+    def guardar_categoria (self):
+        with open('categoria.txt', 'w', encoding="utf-8") as archivo:
+            for id_categoria, categoria in BaseDatos.categorias.items():
+                archivo.write(f"{id_categoria}:{categoria['Nombre']}\n")
+
 
 class Producto:
+    def __init__(self):
+        self.cargar_producto()
+    def cargar_producto(self):
+        try:
+            with open('producto.txt', 'r', encoding="utf-8") as archivo:
+                for linea in archivo:
+                    linea = archivo.strip()
+                    if linea:
+                        id_producto, nombre = linea.split(":")
+                        BaseDatos.categorias[id_categoria] = {
+                            "Nombre": nombre
+                        }
+            print("Clientes importados desde producto.txt")
+        except FileNotFoundError:
+            print("El archivo producto aun no existe, se creara automaticamente después de guardar")
+
+
+class AgregarProducto:
     def __init__(self, id_producto, nombre, id_categoria, precio, stock):
         self.id_producto = id_producto
         self.nombre = nombre
@@ -42,7 +85,19 @@ class Producto:
         self.total_compras = 0
         self.total_ventas = 0
 
-        BaseDatos.productos[self.id_producto] = self
+        BaseDatos.productos[self.id_producto] = {
+            "Nombre": nombre,
+            "id_categoria": id_categoria,
+            "precio": precio,
+            "stock": stock,
+            "total_compras": self.total_compras,
+            "total_ventas": self.total_ventas
+        }
+
+    def guardar_produto(self):
+        with open('producto.txt', 'w', encoding="utf-8") as archivo:
+            for id_producto, productos in BaseDatos.productos.items():
+                archivo.write(f"{id_producto}:{productos['Nombre']} :{productos['id_categoria']} :{['precio']}:{productos['stock']}:{productos['total_compras']}:{productos['total_ventas']}\n")
 
     def actualizar_stock(self, cantidad, operacion):
         if operacion == 'compra':
@@ -86,7 +141,7 @@ class AgregarCliente:
             "Correo": correo
         }
         self.guardar_cliente()
-        print(f"Cliente con {nit} se guardo correctamente")
+        print(f"Cliente con NIT {nit} se guardo correctamente")
 
     def guardar_cliente (self):
         with open('clientes.txt', 'w', encoding="utf-8") as archivo:
@@ -128,7 +183,7 @@ class AgregarEmpleado:
             "Correo": correo
         }
         self.guardar_empleado()
-        print(f"Empleado con {id_empleado} se guardo correctamente")
+        print(f"Empleado con ID {id_empleado} se guardo correctamente")
 
     def guardar_empleado (self):
         with open('empleados.txt', 'w', encoding="utf-8") as archivo:
@@ -174,7 +229,7 @@ class AgregarProveedor:
             "Correo": correo
         }
         self.guardar_proveedor()
-        print(f"Proveedor con {id_proveedor} se guardo correctamente")
+        print(f"Proveedor con ID {id_proveedor} se guardo correctamente")
 
     def guardar_proveedor (self):
         with open('proveedor.txt', 'w', encoding="utf-8") as archivo:
@@ -235,8 +290,8 @@ class DetalleVenta:
 
     def subtotal(self):
         return self.cantidad * self.precio
-
-
+categoria_id=0
+producto_id=1000
 opcion=0
 menu=Menus()
 while(opcion!=4):
@@ -258,15 +313,33 @@ while(opcion!=4):
                         nuevo_empleado= AgregarEmpleado(id_empleado, nombre, telefono, direccion, correo)
                 case 2:
                     intentos=3
-                    print("\nADMINISTRACION")
-                    id_empleado=input("Para tener acceso ingrese el ID de Empleado: ")
-                    if id_empleado in BaseDatos.empleados:
-                        print("\nBIENVENIDO AL MENÚ DE ADMINISTRACIÓN")
-                    else:
-                        print("\nID mal ingresado o no existe un empleado con ese ID. No puede acceder")
-                        print(f"{intentos-1} disponibles")
-                        intentos=intentos-1
-                    if intentos==0:
+                    while intentos!=0:
+                        print("\nADMINISTRACION")
+                        id_empleado=input("Para tener acceso ingrese el ID de Empleado: ")
+                        if id_empleado in BaseDatos.empleados:
+                            while True:
+                                print("\nBIENVENIDO AL MENÚ DE ADMINISTRACIÓN")
+                                menu.menu_administracion()
+                                opcion2 = int(input("Elija una opción (Ingrese números enteros solamente)"))
+                                if opcion2 in [1, 2, 3, 4, 5]:
+                                    match opcion2:
+                                        case 1:
+                                            print("REGISTRO DE CATEGORIAS")
+                                            id_categoria=categoria_id
+                                            nombre=input("Nombre de la categoria: ")
+
+
+
+                                else:
+                                    print("Ingreso una opcion no valida o inexistente")
+
+
+                        else:
+                            print("\nID mal ingresado o no existe un empleado con ese ID. No puede acceder")
+                            print(f"{intentos-1} Intentos disponibles")
+                            intentos=intentos-1
+                        if intentos==0:
+                            print("\nIntentos terminados, volviendo al menú principal...")
 
         else:
             print("Ingreso una opcion no valida o inexistente")
