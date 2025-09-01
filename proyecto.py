@@ -123,7 +123,7 @@ class MostrarProducto:
 
         print("\nLISTADO DE PRODUCTOS")
         for id_producto, productos in BaseDatos.productos.items():
-            print(f"ID: {id_producto}: Nombre: {productos['Nombre']} :{productos['id_categoria']} :{productos['precio']}:{productos['stock']}:{productos['total_compras']}:{productos['total_ventas']}\n")
+            print(f"ID: {id_producto} | Nombre: {productos['Nombre']} | ID de categoria: {productos['id_categoria']} | precio: {productos['Precio']} | Stock{productos['Stock']} | Compras: {productos['total_compras']} | Total de ventas: {productos['total_ventas']}\n")
 
 class Ordenamiento:
     @staticmethod
@@ -330,12 +330,18 @@ class DetalleVenta:
     def subtotal(self):
         return self.cantidad * self.precio
 
+
+Categoria()
+Producto()
+Cliente()
+Empleado()
+Proveedor()
 opcion=0
 menu=Menus()
 while(opcion!=5):
     try:
         menu.menu()
-        opcion=int(input("Elija una opción (Ingrese números enteros solamente)"))
+        opcion=int(input("Elija una opción (Ingrese números enteros solamente): "))
         if opcion in [1,2,3,4,5]:
             match opcion:
                 case 1:
@@ -437,7 +443,7 @@ while(opcion!=5):
                                                             detalle = DetalleCompra(id_detalle_compra, id_compra, id_producto,cantidad, precio, fecha)
                                                             nueva_compra.agregar_detalle(detalle)
 
-                                                            BaseDatos.productos[id_producto]["stock"] += cantidad
+                                                            BaseDatos.productos[id_producto]["Stock"] += cantidad
                                                             BaseDatos.productos[id_producto]["total_compras"] += cantidad
                                                             print(f"Compra registrada correctamente. Producto {id_producto} abastecido con {cantidad} unidades.")
                                         case 4:
@@ -450,8 +456,8 @@ while(opcion!=5):
                                                 print("\nPRODUCTOS A LA VENTA (ordenados por categoria):")
                                                 for id_producto, producto in productos_ordenados:
                                                     print(f"ID: {id_producto} : Nombre: {producto['Nombre']} ")
-                                                    print(f"Categoría: {producto['id_categoria']} : Precio: {producto['precio']}")
-                                                    print(f"Stock: {producto['stock']} : Total Compras: {producto['total_compras']}")
+                                                    print(f"Categoría: {producto['id_categoria']} : Precio: {producto['Precio']}")
+                                                    print(f"Stock: {producto['Stock']} : Total Compras: {producto['total_compras']}")
                                                     print(f"Total Ventas: {producto['total_ventas']}")
                                         case 5:
                                             print("Volviendo al menú principal...")
@@ -466,7 +472,81 @@ while(opcion!=5):
                         if intentos==0:
                             print("\nIntentos terminados, volviendo al menú principal...")
                 case 4:
-                    pass
+                    if not BaseDatos.productos:
+                        print("No hay productos registrados para la venta")
+                    else:
+                        print("\nVENTA DE PRODUCTOS")
+                        print("Productos disponibles:\n")
+                        for id_producto, producto in BaseDatos.productos.items():
+                            print(
+                                f"ID: {id_producto} - {producto['Nombre']} | Precio: {producto['Precio']} | Stock: {producto['Stock']}")
+
+                        carrito = {}
+                        while True:
+                            id_producto = input("\nIngrese el ID del producto a comprar (0 para terminar): ")
+                            if id_producto == "0":
+                                break
+                            if id_producto not in BaseDatos.productos:
+                                print("Producto no válido")
+                                continue
+
+                            cantidad = int(input("Ingrese la cantidad: "))
+                            if cantidad <= 0:
+                                print("La cantidad debe ser mayor a 0")
+                                continue
+                            if cantidad > BaseDatos.productos[id_producto]["Stock"]:
+                                print("No hay suficiente stock disponible")
+                                continue
+
+                            carrito[id_producto] = carrito.get(id_producto, 0) + cantidad
+                            print(f"{BaseDatos.productos[id_producto]['Nombre']} x{cantidad} agregado al carrito")
+
+                        if not carrito:
+                            print("No se compró ningún producto.")
+                            break
+
+                        total = sum(BaseDatos.productos[i]["Precio"] * c for i, c in carrito.items())
+                        print(f"\nTOTAL A PAGAR: Q{total}")
+
+                        nit = input("Ingrese su NIT: ")
+                        if nit in BaseDatos.clientes:
+                            cliente = BaseDatos.clientes[nit]
+                            print("\nCliente encontrado:")
+                            print(
+                                f"Nombre: {cliente['Nombre']} | Dirección: {cliente['Direccion']} | Teléfono: {cliente['Telefono']} | Correo: {cliente['Correo']}")
+                        else:
+                            print("\nCliente no registrado. Ingrese sus datos:")
+                            nombre = input("Nombre: ")
+                            direccion = input("Dirección: ")
+                            telefono = input("Teléfono: ")
+                            correo = input("Correo: ")
+                            nuevo_cliente = AgregarCliente(nit, nombre, direccion, telefono, correo)
+
+                        fecha = input("Ingrese la fecha de la venta (DD/MM/AAAA): ")
+                        id_empleado = input("Ingrese el ID del empleado que atiende: ")
+                        if id_empleado not in BaseDatos.empleados:
+                            print("Empleado no registrado, no se puede registrar la venta.")
+                        else:
+                            id_venta = len(BaseDatos.ventas) + 1
+                            nueva_venta = Venta(id_venta, fecha, nit, id_empleado)
+
+                            for id_producto, cantidad in carrito.items():
+                                id_detalle = len(BaseDatos.detalles_venta) + 1
+                                precio = BaseDatos.productos[id_producto]["Precio"]
+                                detalle = DetalleVenta(id_detalle, id_venta, id_producto, cantidad, precio)
+                                nueva_venta.agregar_detalle(detalle)
+
+                                BaseDatos.productos[id_producto]["Stock"] -= cantidad
+                                BaseDatos.productos[id_producto]["total_ventas"] += cantidad
+
+                            print("\nVenta registrada correctamente")
+                            print("Detalle de compra:")
+                            for id_producto, cantidad in carrito.items():
+                                nombre = BaseDatos.productos[id_producto]["Nombre"]
+                                precio = BaseDatos.productos[id_producto]["Precio"]
+                                print(f"{nombre} x{cantidad} - Q{precio * cantidad}")
+                            print(f"TOTAL PAGADO: Q{total}")
+
                 case 5:
                     print("Saliendo del menú")
         else:
